@@ -37,7 +37,7 @@ class Device(BaseModel):
         ordering = ["-id"]
 
 
-class DevicedDelegate(BaseModel):
+class DeviceDelegate(BaseModel):
     employee = models.ForeignKey(
         "users.user", on_delete=models.CASCADE, related_name="employee_delegated_device"
     )

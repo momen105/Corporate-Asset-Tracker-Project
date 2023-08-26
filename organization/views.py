@@ -5,7 +5,7 @@ from .serializers import (
 )
 from users.apipermissions import IsOwner, IsOrganizationAdmin
 from rest_framework import generics, response, permissions
-from .models import Organization, Device, DevicedDelegate
+from .models import Organization, Device, DeviceDelegate
 
 
 class OrganizationView(
@@ -60,7 +60,7 @@ class DeviceDelegateView(
 ):
     permission_classes = [IsOwner, IsOrganizationAdmin]
     serializer_class = DeviceDelegateSerializer
-    queryset = DevicedDelegate.objects.all()
+    queryset = DeviceDelegate.objects.all()
 
     lookup_field = "id"
 

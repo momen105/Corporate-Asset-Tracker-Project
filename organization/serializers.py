@@ -1,4 +1,4 @@
-from .models import Organization, Device, DevicedDelegate
+from .models import Organization, Device, DeviceDelegate
 from rest_framework import serializers
 from users.serializers import CreateUserSerializer
 
@@ -25,7 +25,7 @@ class DeviceSerializer(serializers.ModelSerializer):
 
 class DeviceDelegateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DevicedDelegate
+        model = DeviceDelegate
         fields = "__all__"
 
     def to_representation(self, instance):
