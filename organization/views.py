@@ -2,10 +2,12 @@ from .serializers import (
     CreateOrganizationSerializer,
     DeviceSerializer,
     DeviceDelegateSerializer,
+    DeviceReceivedSerializer,
 )
 from users.apipermissions import IsOwner, IsOrganizationAdmin
-from rest_framework import generics, response, permissions
-from .models import Organization, Device, DeviceDelegate
+from rest_framework import generics, response, permissions, exceptions
+from .models import Organization, Device, DeviceDelegate, DeviceReceived
+from django.shortcuts import get_object_or_404
 
 
 class OrganizationView(
@@ -58,7 +60,6 @@ class DeviceView(generics.ListCreateAPIView, generics.RetrieveUpdateDestroyAPIVi
 class DeviceDelegateView(
     generics.ListCreateAPIView, generics.RetrieveUpdateDestroyAPIView
 ):
-    permission_classes = [IsOwner, IsOrganizationAdmin]
     serializer_class = DeviceDelegateSerializer
     queryset = DeviceDelegate.objects.all()
 
@@ -85,3 +86,61 @@ class DeviceDelegateView(
             ser = self.serializer_class(delegated_device, many=True)
 
         return response.Response(ser.data)
+
+
+class DeviceReceivedView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = DeviceReceivedSerializer
+    queryset = DeviceReceived.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        current_org = self.request.user.employee_information_user.organization
+        if received_id := self.kwargs.get("id"):
+            result = get_object_or_404(
+                DeviceReceived,
+                id=received_id,
+                delegated_device__device__organization=current_org,
+            )
+            ser = self.serializer_class(result)
+        else:
+            result = self.queryset.filter(
+                delegated_device__device__organization=current_org
+            )
+            ser = self.serializer_class(result, many=True)
+
+        return response.Response(ser.data)
+
+    def create(self, request, *args, **kwargs):
+        data = self.request.data
+        current_user = self.request.user
+
+        if data.get("delegated_device") != current_user.id:
+            raise exceptions.PermissionDenied("You can't receive this device")
+
+        ser = self.serializer_class(data=data)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        return response.Response(ser.data)
+
+
+class DeviceReturnView(generics.UpdateAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = DeviceReceivedSerializer
+    queryset = DeviceReceived.objects.all()
+
+    lookup_field = "id"
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        data = self.request.data
+        if data.get("return_date") and data.get("device_return_condition"):
+            ser = self.get_serializer(instance, data=data, partial=partial)
+            ser.is_valid(raise_exception=True)
+            self.perform_update(ser)
+        else:
+            raise exceptions.NotAcceptable(
+                "Please given the return date and device condition"
+            )
+
+        return super().update(request, *args, **kwargs)

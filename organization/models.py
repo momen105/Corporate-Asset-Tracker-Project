@@ -47,7 +47,17 @@ class DeviceDelegate(BaseModel):
     to_date = models.DateTimeField()
 
     def __str__(self):
-        return f"{self.id} | {self.employee.email}"
+        return f"{self.id} | {self.employee.email} "
 
     class Meta:
         ordering = ["-id"]
+
+
+class DeviceReceived(BaseModel):
+    delegated_device = models.ForeignKey(
+        DeviceDelegate, on_delete=models.CASCADE, related_name="received_device"
+    )
+    check_out = models.DateTimeField()
+    device_check_out_condition = models.TextField()
+    return_date = models.DateTimeField(blank=True,null=True)
+    device_return_condition = models.TextField(blank=True)
