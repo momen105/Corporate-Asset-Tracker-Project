@@ -21,7 +21,8 @@ class OrganizationView(
 
     def get(self, request, *args, **kwargs):
         if org_id := self.kwargs.get("id"):
-            org = self.queryset.get(id=org_id)
+            org = get_object_or_404(self.queryset, id=org_id)
+
             ser = self.serializer_class(org)
         else:
             org = self.queryset.all()
@@ -39,7 +40,7 @@ class DeviceView(generics.ListCreateAPIView, generics.RetrieveUpdateDestroyAPIVi
 
     def get(self, request, *args, **kwargs):
         if device_id := self.kwargs.get("id"):
-            device = self.queryset.get(id=device_id)
+            device = get_object_or_404(self.queryset, id=device_id)
             ser = self.serializer_class(device)
         else:
             device = self.queryset.all()
@@ -75,9 +76,9 @@ class DeviceDelegateView(
     def get(self, request, *args, **kwargs):
         current_org = self.request.user.employee_information_user.organization
         if delegate_id := self.kwargs.get("id"):
-            delegated_device = self.queryset.filter(
-                id=delegate_id, device__organization=current_org
-            ).first()
+            delegated_device = get_object_or_404(
+                self.queryset, id=delegate_id, device__organization=current_org
+            )
             ser = self.serializer_class(delegated_device)
         else:
             delegated_device = self.queryset.filter(

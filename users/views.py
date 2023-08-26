@@ -27,16 +27,14 @@ class AddEmployeeView(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         current_org = self.request.user.employee_information_user.organization
 
-        if user_id := self.kwargs.get("user_id"):
-            org = self.queryset.get(
-                id=user_id, employee_information_user__organization=current_org
-            )
-            ser = self.serializer_class(org)
+        if user_id := self.kwargs.get("id"):
+            user = get_object_or_404(self.queryset, id=user_id)
+            ser = self.serializer_class(user)
         else:
-            org = self.queryset.filter(
+            user = self.queryset.filter(
                 employee_information_user__organization=current_org
             )
-            ser = self.serializer_class(org, many=True)
+            ser = self.serializer_class(user, many=True)
 
         return response.Response(ser.data)
 

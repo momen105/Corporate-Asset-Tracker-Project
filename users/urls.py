@@ -20,7 +20,8 @@ only_project_owner_urlpatterns = [
 ]
 
 organization_admin_and_employee_urlpatterns = [
-    path("add-employee/", AddEmployeeView.as_view())
+    path("add-employee/", AddEmployeeView.as_view()),
+    path("add-employee/<int:id>/", AddEmployeeView.as_view()),
 ]
 
 
