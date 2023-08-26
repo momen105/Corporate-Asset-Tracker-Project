@@ -59,5 +59,5 @@ class DeviceReceived(BaseModel):
     )
     check_out = models.DateTimeField()
     device_check_out_condition = models.TextField()
-    return_date = models.DateTimeField(blank=True,null=True)
+    return_date = models.DateTimeField(blank=True, null=True)
     device_return_condition = models.TextField(blank=True)
