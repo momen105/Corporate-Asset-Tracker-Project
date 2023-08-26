@@ -35,3 +35,19 @@ class Device(BaseModel):
 
     class Meta:
         ordering = ["-id"]
+
+
+class DevicedDelegate(BaseModel):
+    employee = models.ForeignKey(
+        "users.user", on_delete=models.CASCADE, related_name="employee_delegated_device"
+    )
+    device = models.ManyToManyField(Device, related_name="delegated_devices")
+    device_condition = models.TextField()
+    from_date = models.DateTimeField()
+    to_date = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.id} | {self.employee.email}"
+
+    class Meta:
+        ordering = ["-id"]
