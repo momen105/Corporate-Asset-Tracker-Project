@@ -12,7 +12,7 @@ all_user_urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
 
-project_owner_urlpatterns = [
+only_project_owner_urlpatterns = [
     path(
         "create-organization-admin/",
         CreateOrganizationAdminView.as_view(),
@@ -25,5 +25,5 @@ organization_admin_and_employee_urlpatterns = [
 
 
 urlpatterns += all_user_urlpatterns
-urlpatterns += project_owner_urlpatterns
+urlpatterns += only_project_owner_urlpatterns
 urlpatterns += organization_admin_and_employee_urlpatterns

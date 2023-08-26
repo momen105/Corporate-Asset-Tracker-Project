@@ -1,16 +1,22 @@
 from django.urls import path
-from .views import OrganizationView
+from .views import OrganizationView, DeviceView
 
 urlpatterns = []
 
-project_owner_urlpatterns = [
+only_project_owner_urlpatterns = [
     path(
         "create-organization/",
         OrganizationView.as_view(),
     ),
     path(
-        "create-organization/<int:org_id>/",
+        "create-organization/<int:id>/",
         OrganizationView.as_view(),
     ),
 ]
-urlpatterns += project_owner_urlpatterns
+all_user_urlpatterns = [
+    path("create-device/", DeviceView.as_view()),
+    path("create-device/<int:id>/", DeviceView.as_view()),
+]
+
+urlpatterns += only_project_owner_urlpatterns
+urlpatterns += all_user_urlpatterns

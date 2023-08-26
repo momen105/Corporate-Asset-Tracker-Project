@@ -20,3 +20,18 @@ class Organization(BaseModel):
 
     class Meta:
         ordering = ["-id"]
+
+
+class Device(BaseModel):
+    name = models.CharField(max_length=250)
+    description = models.TextField(blank=True)
+    in_stock = models.IntegerField(default=0)
+    organization = models.ForeignKey(
+        Organization, on_delete=models.CASCADE, related_name="organization_device"
+    )
+
+    def __str__(self):
+        return f"{self.id} | {self.name}"
+
+    class Meta:
+        ordering = ["-id"]
